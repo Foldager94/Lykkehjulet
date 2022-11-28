@@ -18,7 +18,20 @@ class LykkehjuletViewModel: ViewModel() {
     }
 
 
-
+    fun guessWord() {
+        if(gameData.wordGuess != ""){
+            if(gameData.wordGuess.lowercase() == gameData.word.lowercase()){
+                gameData.gameWon = true
+                gameData.gameRunning = false
+            } else {
+                gameData.alert = "Du gættede forkert og har misted et liv"
+                gameData.wordGuess = ""
+                checkGameStatus()
+            }
+        }else{
+            gameData.alert = "Du skal indtaste noget før du kan lave et gæt"
+        }
+    }
     private fun wheelOutCome(outCome: String){
         when (outCome){
             "100" -> gameData.currentPoint = 100
@@ -28,7 +41,7 @@ class LykkehjuletViewModel: ViewModel() {
             "800" -> gameData.currentPoint = 800
             "1000" -> gameData.currentPoint = 1000
             "1500" -> gameData.currentPoint = 1500
-            "Fallit" -> gameData.pointTotal = 0
+            "Fallit" -> {gameData.pointTotal = 0; gameData.hasWheelBeenSpined = false}
         }
     }
     private fun wheelOutComeText(outCome: String){
@@ -51,17 +64,21 @@ class LykkehjuletViewModel: ViewModel() {
         wheelOutComeText(gameData.wheelPlacement)
     }
 
-    fun changeKeyboard(){
-        gameData.buyLetter = !gameData.buyLetter
+    fun changeKeyboard(keyboard: String){
+        gameData.keyBoard = keyboard
     }
 
     fun buyVowelLogic(letter: String){
-        if (!getIsClicked(letter) && gameData.pointTotal >=500){
-            buyVowel(letter)
-            setIsClicked(letter)
-            gameData.alert = ""
-        }else{
-            gameData.alert = "Du har ikke nok point til at købe en Vokal"
+        if(!gameData.hasWheelBeenSpined) {
+            if (!getIsClicked(letter) && gameData.pointTotal >= 500) {
+                buyVowel(letter)
+                setIsClicked(letter)
+                gameData.alert = ""
+            } else {
+                gameData.alert = "Du har ikke nok point til at købe en Vokal"
+            }
+        }else {
+            gameData.alert = "Voklar skal købes før hjulet er blevet drejet"
         }
     }
 

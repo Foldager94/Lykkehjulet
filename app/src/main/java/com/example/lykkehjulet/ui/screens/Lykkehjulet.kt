@@ -4,10 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -93,19 +90,37 @@ fun Wheel(viewModel: LykkehjuletViewModel) {
 @Composable
 fun WordPicker(viewModel: LykkehjuletViewModel) {
     Row(modifier = Modifier
-        .fillMaxHeight(0.18f)) {
-        Button(onClick = {
-            viewModel.changeKeyboard()
-        }) {
-            Text(text = "Køb\nVokal", textAlign = TextAlign.Center)
+        .fillMaxHeight(2f)) {
+        Column(modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(0.27f), verticalArrangement = Arrangement.Top) {
+            Button(modifier = Modifier.padding(bottom = 10.dp), onClick = {
+                viewModel.changeKeyboard("consonant")
+            }) {
+                    Text(text = "Gæt\nBogstav", textAlign = TextAlign.Center, fontSize = 14.sp)
+            }
+            Button(modifier = Modifier.padding(bottom = 10.dp),onClick = {
+                viewModel.changeKeyboard("vowel")
+            }) {
+                    Text(text = "Køb\nBogstav", textAlign = TextAlign.Center, fontSize = 14.sp)
+            }
+            Button(modifier = Modifier.padding(bottom = 10.dp),onClick = {
+                viewModel.changeKeyboard("guessWord")
+            }) {
+                    Text(text = "Gæt\nSætning", textAlign = TextAlign.Center, fontSize = 14.sp)
+            }
         }
-    }
-    Row(modifier = Modifier
-        .fillMaxHeight(1f)) {
-        if (viewModel.gameData.buyLetter) {
-            Vowels(viewModel)
-        } else {
-            Consonants(viewModel)
+        Column(modifier = Modifier
+            .fillMaxHeight(0.9f)
+            .fillMaxWidth(1f)
+            .border(5.dp, Color.Black, RoundedCornerShape(10.dp)), verticalArrangement = Arrangement.Center) {
+            if (viewModel.gameData.keyBoard == "vowel") {
+                Vowels(viewModel)
+            } else if (viewModel.gameData.keyBoard == "consonant"){
+                Consonants(viewModel)
+            } else if (viewModel.gameData.keyBoard == "guessWord"){
+                GuessWord(viewModel)
+            }
         }
     }
 }
@@ -157,60 +172,87 @@ fun PointTotal(totalPoints:Int){
 }
 @Composable
 fun Consonants(viewModel: LykkehjuletViewModel, modifier:Modifier = Modifier){
-
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(0.25f), horizontalAlignment = Alignment.CenterHorizontally) {
+    Spacer(modifier = Modifier.size(6.dp))
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
         drawConsuantlLetter("B", viewModel)
-        drawConsuantlLetter("G", viewModel)
-        drawConsuantlLetter("L", viewModel)
-        drawConsuantlLetter("Q", viewModel)
-        drawConsuantlLetter("V", viewModel)
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(0.33f), horizontalAlignment = Alignment.CenterHorizontally) {
         drawConsuantlLetter("C", viewModel)
-        drawConsuantlLetter("H", viewModel)
-        drawConsuantlLetter("M", viewModel)
-        drawConsuantlLetter("R", viewModel)
-        drawConsuantlLetter("W", viewModel)
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally) {
         drawConsuantlLetter("D", viewModel)
-        drawConsuantlLetter("J", viewModel)
-        drawConsuantlLetter("N", viewModel)
-        drawConsuantlLetter("S", viewModel)
-        drawConsuantlLetter("X", viewModel)
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         drawConsuantlLetter("F", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
+        drawConsuantlLetter("G", viewModel)
+        drawConsuantlLetter("H", viewModel)
+        drawConsuantlLetter("J", viewModel)
         drawConsuantlLetter("K", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
+        drawConsuantlLetter("L", viewModel)
+        drawConsuantlLetter("M", viewModel)
+        drawConsuantlLetter("N", viewModel)
         drawConsuantlLetter("P", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
+        drawConsuantlLetter("Q", viewModel)
+        drawConsuantlLetter("R", viewModel)
+        drawConsuantlLetter("S", viewModel)
         drawConsuantlLetter("T", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+        drawConsuantlLetter("V", viewModel)
+        drawConsuantlLetter("W", viewModel)
+        drawConsuantlLetter("X", viewModel)
         drawConsuantlLetter("Z", viewModel)
     }
 }
+
 @Composable
 fun Vowels(viewModel: LykkehjuletViewModel, modifier: Modifier = Modifier){
+    Text(modifier = Modifier.fillMaxWidth(), text = "500 points per bogstav", fontSize = 20.sp, textAlign = TextAlign.Center)
     Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(0.33f), horizontalAlignment = Alignment.CenterHorizontally) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
         drawVowelLetter("A", viewModel)
-        drawVowelLetter("O", viewModel)
-        drawVowelLetter("Æ", viewModel)
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally) {
         drawVowelLetter("E", viewModel)
-        drawVowelLetter("U", viewModel)
-        drawVowelLetter("Ø", viewModel)
-
-    }
-    Spacer(modifier = Modifier.height(10.dp))
-    Column(modifier = Modifier.fillMaxWidth(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         drawVowelLetter("I", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+        drawVowelLetter("O", viewModel)
+        drawVowelLetter("E", viewModel)
         drawVowelLetter("Y", viewModel)
+    }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+        drawVowelLetter("Æ", viewModel)
+        drawVowelLetter("Ø", viewModel)
         drawVowelLetter("Å", viewModel)
+    }
+
+}
+@Composable
+fun GuessWord(viewModel: LykkehjuletViewModel){
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        OutlinedTextField(modifier = Modifier.padding(10.dp),
+            value = viewModel.gameData.wordGuess,
+            onValueChange = { viewModel.gameData.wordGuess = it })
+    }
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Button(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), onClick = { viewModel.guessWord() }) {
+            Text(text = "Gæt")
+        }
     }
 }
 @OptIn(ExperimentalMaterialApi::class)
