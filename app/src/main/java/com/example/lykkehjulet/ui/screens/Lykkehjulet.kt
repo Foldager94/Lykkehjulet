@@ -28,28 +28,7 @@ fun Lykkehjulet(ViewModel: LykkehjuletViewModel) {
             Wheel(ViewModel)
             WordPicker(ViewModel)
         }else{
-            if(ViewModel.gameData.gameWon) {
-                Row() {
-                    Text(text = "Tillykke du vandt!", color = Color.Green, fontSize = 30.sp)
-                }
-                Row(){
-                    Text(text = "De score blev " + ViewModel.gameData.pointTotal, fontSize = 30.sp)
-                }
-            }else{
-                Row() {
-                    Text(text = "Desværre du tabte", color = Color.Red, fontSize = 30.sp)
-
-                }
-                Row(){
-                    Text(text = "De score blev " + ViewModel.gameData.pointTotal, fontSize = 30.sp)
-                }
-                Row(){
-                    Text(text = "Ordet var:\n" + ViewModel.gameData.word, textAlign = TextAlign.Center, fontSize = 30.sp)
-                }
-            }
-            Button(onClick = {ViewModel.restartGame()}) {
-                Text(text = "Spil Igen")
-            }
+            postGameScren(ViewModel)
         }
     }
 }
@@ -130,7 +109,31 @@ fun WordPicker(viewModel: LykkehjuletViewModel) {
         }
     }
 }
+@Composable
+fun postGameScren(viewModel: LykkehjuletViewModel){
+    if(viewModel.gameData.gameWon) {
+        Row() {
+            Text(text = "Tillykke du vandt!", color = Color.Green, fontSize = 30.sp)
+        }
+        Row(){
+            Text(text = "De score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
+        }
+    }else{
+        Row() {
+            Text(text = "Desværre du tabte", color = Color.Red, fontSize = 30.sp)
 
+        }
+        Row(){
+            Text(text = "De score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
+        }
+        Row(){
+            Text(text = "Ordet var:\n" + viewModel.gameData.word, textAlign = TextAlign.Center, fontSize = 30.sp)
+        }
+    }
+    Button(onClick = {viewModel.restartGame()}) {
+        Text(text = "Spil Igen")
+    }
+}
 @Composable
 fun CategoryOfWord(modifier:Modifier = Modifier){
     Column(modifier = modifier.fillMaxWidth(0.33f),  horizontalAlignment = Alignment.Start) {
