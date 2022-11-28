@@ -12,26 +12,45 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.VerticalAlignmentLine
-
-
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lykkehjulet.data.LykkehjuletViewModel
-import kotlin.random.Random
 
 @Composable
 fun Lykkehjulet(ViewModel: LykkehjuletViewModel) {
     ScreenSetup() {
-        WordToGuess(ViewModel.hashWord)
-        Infobar(totalLife = ViewModel.lifeTotal, totalPoints = ViewModel.pointTotal)
-        Alert(ViewModel)
-        Wheel(ViewModel)
-        WordPicker(ViewModel)
+        WordToGuess(ViewModel.gameData.hashWord)
+        Infobar(totalLife = ViewModel.gameData.lifeTotal, totalPoints = ViewModel.gameData.pointTotal)
+        if(ViewModel.gameData.gameRunning) {
+            Alert(ViewModel)
+            Wheel(ViewModel)
+            WordPicker(ViewModel)
+        }else{
+            if(ViewModel.gameData.gameWon) {
+                Row() {
+                    Text(text = "Tillykke du vandt!", color = Color.Green, fontSize = 30.sp)
+                }
+                Row(){
+                    Text(text = "De score blev " + ViewModel.gameData.pointTotal, fontSize = 30.sp)
+                }
+            }else{
+                Row() {
+                    Text(text = "Desværre du tabte", color = Color.Red, fontSize = 30.sp)
+
+                }
+                Row(){
+                    Text(text = "De score blev " + ViewModel.gameData.pointTotal, fontSize = 30.sp)
+                }
+                Row(){
+                    Text(text = "Ordet var:\n" + ViewModel.gameData.word, textAlign = TextAlign.Center, fontSize = 30.sp)
+                }
+            }
+            Button(onClick = {ViewModel.restartGame()}) {
+                Text(text = "Spil Igen")
+            }
+        }
     }
 }
 
@@ -74,25 +93,19 @@ fun Infobar(totalLife:Int, totalPoints:Int, modifier:Modifier = Modifier){
 @Composable
 fun Alert(viewModel: LykkehjuletViewModel){
     Row(modifier = Modifier.fillMaxHeight(0.050f), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-        Text(viewModel.alert, color = Color.Red )
+        Text(viewModel.gameData.alert, color = Color.Red )
     }
 }
 @Composable
 fun Wheel(viewModel: LykkehjuletViewModel) {
     Row(modifier = Modifier
         .fillMaxHeight(0.4f)) {
-        Text(text = viewModel.wheelText)
+        Text(text = viewModel.gameData.wheelText)
     }
     Row(modifier = Modifier
         .fillMaxHeight(0.20f)) {
         Button(onClick = {
-            if (!viewModel.hasWheelBeenSpined) {
-                viewModel.spineWheel()
-                viewModel.hasWheelBeenSpined = true
-                viewModel.alert = ""
-            }else{
-                viewModel.alert = "Du skal vælge en konsunant"
-            }
+            viewModel.spinWheelLogic()
         }) {
             Text(text = "Drej Hjulet", textAlign = TextAlign.Center)
         }
@@ -103,14 +116,14 @@ fun WordPicker(viewModel: LykkehjuletViewModel) {
     Row(modifier = Modifier
         .fillMaxHeight(0.18f)) {
         Button(onClick = {
-            viewModel.buyLetter = !viewModel.buyLetter
+            viewModel.changeKeyboard()
         }) {
             Text(text = "Køb\nVokal", textAlign = TextAlign.Center)
         }
     }
     Row(modifier = Modifier
         .fillMaxHeight(1f)) {
-        if (viewModel.buyLetter) {
+        if (viewModel.gameData.buyLetter) {
             Vowels(viewModel)
         } else {
             Consonants(viewModel)
@@ -120,7 +133,7 @@ fun WordPicker(viewModel: LykkehjuletViewModel) {
 
 @Composable
 fun CategoryOfWord(modifier:Modifier = Modifier){
-    Column(modifier = Modifier.fillMaxWidth(0.33f),  horizontalAlignment = Alignment.Start) {
+    Column(modifier = modifier.fillMaxWidth(0.33f),  horizontalAlignment = Alignment.Start) {
         Text("Kategori: Person", fontSize = 15.sp,
             textAlign = TextAlign.Center)
     }
@@ -211,15 +224,7 @@ fun drawVowelLetter(letter:String, viewModel: LykkehjuletViewModel, modifier:Mod
             .alpha(alphaValue),
         border = BorderStroke(2.dp,Color.Black),
         backgroundColor = Color.LightGray,
-        onClick = {
-            if (!viewModel.getIsClicked(letter) && viewModel.pointTotal >=500){
-                viewModel.buyVowel(letter)
-                viewModel.setIsClicked(letter)
-                viewModel.alert = ""
-            }else{
-                viewModel.alert = "Du har ikke nok point til at købe en Vokal"
-            }
-            } ){
+        onClick = { viewModel.buyVowelLogic(letter) }){
         Text(text = letter, fontSize = 20.sp, textAlign = TextAlign.Center)
     }
 }
@@ -239,14 +244,7 @@ fun drawConsuantlLetter(letter:String, viewModel: LykkehjuletViewModel, modifier
         border = BorderStroke(2.dp,Color.Black),
         backgroundColor = Color.LightGray,
         onClick = {
-            if (!viewModel.getIsClicked(letter) && viewModel.hasWheelBeenSpined){
-                viewModel.guessConsunant(letter)
-                viewModel.setIsClicked(letter)
-                viewModel.hasWheelBeenSpined = false
-                viewModel.alert = ""
-            }else{
-                viewModel.alert = "Du skal dreje hjulet før du kan vælge et bogstav"
-            }
+            viewModel.guessConsunantLogic(letter)
         } ){
         Text(text = letter, fontSize = 20.sp, textAlign = TextAlign.Center)
     }
