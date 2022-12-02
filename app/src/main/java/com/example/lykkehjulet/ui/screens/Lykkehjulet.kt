@@ -1,5 +1,6 @@
 package com.example.lykkehjulet.ui.screens
 
+import android.content.res.Resources
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.lykkehjulet.R
 import com.example.lykkehjulet.data.LykkehjuletViewModel
 
 @Composable
@@ -83,31 +86,31 @@ fun Wheel(viewModel: LykkehjuletViewModel) {
         Button(onClick = {
             viewModel.spinWheelLogic()
         }) {
-            Text(text = "Drej Hjulet", textAlign = TextAlign.Center)
+            Text(text = stringResource(R.string.spin_wheel), textAlign = TextAlign.Center)
         }
     }
 }
 @Composable
 fun WordPicker(viewModel: LykkehjuletViewModel) {
     Row(modifier = Modifier
-        .fillMaxHeight(2f)) {
+        ) {
         Column(modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.27f), verticalArrangement = Arrangement.Top) {
+            .fillMaxWidth(0.27f), verticalArrangement = Arrangement.Bottom) {
             Button(modifier = Modifier.padding(bottom = 10.dp), onClick = {
                 viewModel.changeKeyboard("consonant")
             }) {
-                    Text(text = "Gæt\nBogstav", textAlign = TextAlign.Center, fontSize = 14.sp)
+                    Text(text = stringResource(R.string.guess_letter), textAlign = TextAlign.Center, fontSize = 14.sp)
             }
             Button(modifier = Modifier.padding(bottom = 10.dp),onClick = {
                 viewModel.changeKeyboard("vowel")
             }) {
-                    Text(text = "Køb\nBogstav", textAlign = TextAlign.Center, fontSize = 14.sp)
+                    Text(text = stringResource(R.string.buy_letter), textAlign = TextAlign.Center, fontSize = 14.sp)
             }
             Button(modifier = Modifier.padding(bottom = 10.dp),onClick = {
                 viewModel.changeKeyboard("guessWord")
             }) {
-                    Text(text = "Gæt\nSætning", textAlign = TextAlign.Center, fontSize = 14.sp)
+                    Text(text = stringResource(R.string.guess_word), textAlign = TextAlign.Center, fontSize = 14.sp)
             }
         }
         Column(modifier = Modifier
@@ -130,20 +133,14 @@ fun postGameScren(viewModel: LykkehjuletViewModel){
         Row() {
             Text(text = "Tillykke du vandt!", color = Color.Green, fontSize = 30.sp)
         }
-        Row(){
-            Text(text = "De score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
-        }
-    }else{
+    } else {
         Row() {
             Text(text = "Desværre du tabte", color = Color.Red, fontSize = 30.sp)
+    }
+    Row(){
+        Text(text = "Din score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
+    }
 
-        }
-        Row(){
-            Text(text = "De score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
-        }
-        Row(){
-            Text(text = "Ordet var:\n" + viewModel.gameData.word, textAlign = TextAlign.Center, fontSize = 30.sp)
-        }
     }
     Button(onClick = {viewModel.restartGame()}) {
         Text(text = "Spil Igen")
@@ -159,14 +156,14 @@ fun CategoryOfWord(modifier:Modifier = Modifier){
 @Composable
 fun LifeTotal(totalLife:Int){
     Column(modifier = Modifier.fillMaxWidth(1f),  horizontalAlignment = Alignment.End) {
-        Text(text = "Liv: $totalLife", fontSize = 15.sp,
+        Text(text = stringResource(R.string.lifes)+": $totalLife", fontSize = 15.sp,
             textAlign = TextAlign.Center)
     }
 }
 @Composable
 fun PointTotal(totalPoints:Int){
     Column(modifier = Modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Points: $totalPoints", fontSize = 15.sp,
+        Text(text = stringResource(R.string.points)+": $totalPoints", fontSize = 15.sp,
             textAlign = TextAlign.Center)
     }
 }
@@ -217,7 +214,7 @@ fun Consonants(viewModel: LykkehjuletViewModel, modifier:Modifier = Modifier){
 
 @Composable
 fun Vowels(viewModel: LykkehjuletViewModel, modifier: Modifier = Modifier){
-    Text(modifier = Modifier.fillMaxWidth(), text = "500 points per bogstav", fontSize = 20.sp, textAlign = TextAlign.Center)
+    Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.letter_price), fontSize = 20.sp, textAlign = TextAlign.Center)
     Spacer(modifier = Modifier.height(10.dp))
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -251,7 +248,7 @@ fun GuessWord(viewModel: LykkehjuletViewModel){
     }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
         Button(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), onClick = { viewModel.guessWord() }) {
-            Text(text = "Gæt")
+            Text(text = stringResource(R.string.guess_word_button))
         }
     }
 }
