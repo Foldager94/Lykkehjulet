@@ -1,7 +1,8 @@
 package com.example.lykkehjulet.ui.screens
 
-import android.content.res.Resources
+
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -22,9 +24,9 @@ import com.example.lykkehjulet.data.LykkehjuletViewModel
 fun Lykkehjulet(ViewModel: LykkehjuletViewModel) {
     ScreenSetup() {
         WordToGuess(ViewModel.gameData.hashWord)
-        Infobar(totalLife = ViewModel.gameData.lifeTotal, totalPoints = ViewModel.gameData.pointTotal)
+        Infobar(totalLife = ViewModel.gameData.lifeTotal, totalPoints = ViewModel.gameData.pointTotal, category = ViewModel.gameData.category)
         if(ViewModel.gameData.gameRunning) {
-            Alert(ViewModel)
+            AlertWire(ViewModel)
             Wheel(ViewModel)
             WordPicker(ViewModel)
         }else{
@@ -37,7 +39,7 @@ fun Lykkehjulet(ViewModel: LykkehjuletViewModel) {
 
 @Composable
 fun ScreenSetup(content: @Composable () -> Unit) {
-    Box(modifier = Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
+    Box(modifier = Modifier.background(color= Color(0xFF222022)).padding(top = 15.dp, start = 10.dp, end = 10.dp)) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -49,37 +51,55 @@ fun ScreenSetup(content: @Composable () -> Unit) {
 }
 @Composable
 fun WordToGuess(word:String, modifier:Modifier = Modifier){
-    Row(modifier = modifier
+    Row(modifier = modifier.background(color= Color(0xFF323232), shape = RoundedCornerShape(20))
         .fillMaxHeight(0.1f)
         .fillMaxWidth()
-        .border(1.dp, Color.Black, shape = RoundedCornerShape(20)),
+        .border(2.dp, shape = RoundedCornerShape(20), brush = Brush.horizontalGradient(listOf(Color(0xFFED7069), Color(0xFF9F6CF1)))),
         horizontalArrangement = Arrangement.Center){
         Text(text = word, fontSize = 30.sp,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center, color = Color.White)
     }
 }
 @Composable
-fun Infobar(totalLife:Int, totalPoints:Int, modifier:Modifier = Modifier){
+fun Infobar(totalLife:Int, totalPoints:Int, category: String, modifier:Modifier = Modifier){
     Row(modifier = Modifier
         .fillMaxHeight(0.030f)
         .fillMaxWidth(1f)){
-        CategoryOfWord()
+        CategoryOfWord(category = category)
         PointTotal(totalPoints)
         LifeTotal(totalLife)
     }
 
 }
 @Composable
-fun Alert(viewModel: LykkehjuletViewModel){
+fun AlertWire(viewModel: LykkehjuletViewModel){
+    when(viewModel.gameData.alert){
+        0 -> viewModel.gameData.alertText = stringResource(R.string.alert_0)
+        1 -> viewModel.gameData.alertText = stringResource(R.string.alert_1)
+        2 -> viewModel.gameData.alertText = stringResource(R.string.alert_2)
+        3 -> viewModel.gameData.alertText = stringResource(R.string.alert_3)
+        4 -> viewModel.gameData.alertText = stringResource(R.string.alert_4)
+        5 -> viewModel.gameData.alertText = stringResource(R.string.alert_5)
+        6 -> viewModel.gameData.alertText = stringResource(R.string.alert_6)
+    }
+    Alert(viewModel.gameData.alertText)
+}
+@Composable
+fun Alert(alert: String){
     Row(modifier = Modifier.fillMaxHeight(0.050f), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
-        Text(viewModel.gameData.alert, color = Color.Red )
+        Text(alert, color = Color.Red )
     }
 }
+
 @Composable
 fun Wheel(viewModel: LykkehjuletViewModel) {
     Row(modifier = Modifier
         .fillMaxHeight(0.4f)) {
-        Text(text = viewModel.gameData.wheelText)
+        if(viewModel.gameData.currentPoint==0){
+            Text(text = stringResource(R.string.wheel_text_broke), color = Color.White, fontSize = 30.sp)
+        }else if (viewModel.gameData.currentPoint >0){
+            Text(text = stringResource(R.string.wheel_text_points)+" "+viewModel.gameData.currentPoint, color = Color.White, fontSize = 30.sp)
+        }
     }
     Row(modifier = Modifier
         .fillMaxHeight(0.20f)) {
@@ -92,11 +112,11 @@ fun Wheel(viewModel: LykkehjuletViewModel) {
 }
 @Composable
 fun WordPicker(viewModel: LykkehjuletViewModel) {
-    Row(modifier = Modifier
+    Row(
         ) {
         Column(modifier = Modifier
             .fillMaxHeight()
-            .fillMaxWidth(0.27f), verticalArrangement = Arrangement.Bottom) {
+            .fillMaxWidth(0.27f), verticalArrangement = Arrangement.Top) {
             Button(modifier = Modifier.padding(bottom = 10.dp), onClick = {
                 viewModel.changeKeyboard("consonant")
             }) {
@@ -113,10 +133,10 @@ fun WordPicker(viewModel: LykkehjuletViewModel) {
                     Text(text = stringResource(R.string.guess_word), textAlign = TextAlign.Center, fontSize = 14.sp)
             }
         }
-        Column(modifier = Modifier
+        Column(modifier = Modifier.background(color= Color(0xFF323232), shape = RoundedCornerShape(10.dp))
             .fillMaxHeight(0.9f)
             .fillMaxWidth(1f)
-            .border(5.dp, Color.Black, RoundedCornerShape(10.dp)), verticalArrangement = Arrangement.Center) {
+            .border(5.dp, shape = RoundedCornerShape(10.dp), brush = Brush.horizontalGradient(listOf(Color(0xFFED7069), Color(0xFF9F6CF1)))), verticalArrangement = Arrangement.Center) {
             if (viewModel.gameData.keyBoard == "vowel") {
                 Vowels(viewModel)
             } else if (viewModel.gameData.keyBoard == "consonant"){
@@ -131,40 +151,40 @@ fun WordPicker(viewModel: LykkehjuletViewModel) {
 fun postGameScren(viewModel: LykkehjuletViewModel){
     if(viewModel.gameData.gameWon) {
         Row() {
-            Text(text = "Tillykke du vandt!", color = Color.Green, fontSize = 30.sp)
+            Text(text = stringResource(R.string.post_game_screen_won), color = Color.Green, fontSize = 30.sp)
         }
     } else {
         Row() {
-            Text(text = "Desværre du tabte", color = Color.Red, fontSize = 30.sp)
+            Text(text = stringResource(R.string.post_game_screen_lost), color = Color.Red, fontSize = 30.sp)
     }
     Row(){
-        Text(text = "Din score blev " + viewModel.gameData.pointTotal, fontSize = 30.sp)
+        Text(text = stringResource(R.string.post_game_screen_points) + " " +  viewModel.gameData.pointTotal, fontSize = 30.sp, color = Color.White)
     }
 
     }
     Button(onClick = {viewModel.restartGame()}) {
-        Text(text = "Spil Igen")
+        Text(text = stringResource(R.string.post_game_screen_button))
     }
 }
 @Composable
-fun CategoryOfWord(modifier:Modifier = Modifier){
+fun CategoryOfWord(modifier:Modifier = Modifier, category: String){
     Column(modifier = modifier.fillMaxWidth(0.33f),  horizontalAlignment = Alignment.Start) {
-        Text("Kategori: Person", fontSize = 15.sp,
-            textAlign = TextAlign.Center)
+        Text(stringResource(R.string.category)+": "+category, fontSize = 15.sp,
+            textAlign = TextAlign.Center, color = Color.White)
     }
 }
 @Composable
 fun LifeTotal(totalLife:Int){
     Column(modifier = Modifier.fillMaxWidth(1f),  horizontalAlignment = Alignment.End) {
         Text(text = stringResource(R.string.lifes)+": $totalLife", fontSize = 15.sp,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center, color = Color.White)
     }
 }
 @Composable
 fun PointTotal(totalPoints:Int){
     Column(modifier = Modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = stringResource(R.string.points)+": $totalPoints", fontSize = 15.sp,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center, color = Color.White)
     }
 }
 @Composable
@@ -214,7 +234,7 @@ fun Consonants(viewModel: LykkehjuletViewModel, modifier:Modifier = Modifier){
 
 @Composable
 fun Vowels(viewModel: LykkehjuletViewModel, modifier: Modifier = Modifier){
-    Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.letter_price), fontSize = 20.sp, textAlign = TextAlign.Center)
+    Text(modifier = Modifier.fillMaxWidth(), text = stringResource(R.string.letter_price), fontSize = 20.sp, textAlign = TextAlign.Center, color = Color.White)
     Spacer(modifier = Modifier.height(10.dp))
     Row(modifier = Modifier
         .fillMaxWidth()
@@ -247,7 +267,9 @@ fun GuessWord(viewModel: LykkehjuletViewModel){
             onValueChange = { viewModel.gameData.wordGuess = it })
     }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-        Button(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp), onClick = { viewModel.guessWord() }) {
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp), onClick = { viewModel.guessWord() }) {
             Text(text = stringResource(R.string.guess_word_button))
         }
     }

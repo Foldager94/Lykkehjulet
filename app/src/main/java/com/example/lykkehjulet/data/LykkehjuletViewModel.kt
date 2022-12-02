@@ -1,7 +1,6 @@
 package com.example.lykkehjulet.data
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -24,44 +23,20 @@ class LykkehjuletViewModel: ViewModel() {
                 gameData.gameWon = true
                 gameData.gameRunning = false
             } else {
-                gameData.alert = "Du gættede forkert og har misted et liv"
+                gameData.alert = 1
                 gameData.wordGuess = ""
                 checkGameStatus()
             }
         }else{
-            gameData.alert = "Du skal indtaste noget før du kan lave et gæt"
+            gameData.alert = 6
         }
     }
-    private fun wheelOutCome(outCome: String){
-        when (outCome){
-            "100" -> gameData.currentPoint = 100
-            "300" -> gameData.currentPoint = 300
-            "500" -> gameData.currentPoint = 500
-            "600" -> gameData.currentPoint = 600
-            "800" -> gameData.currentPoint = 800
-            "1000" -> gameData.currentPoint = 1000
-            "1500" -> gameData.currentPoint = 1500
-            "Fallit" -> {gameData.pointTotal = 0; gameData.hasWheelBeenSpined = false}
-        }
-    }
-    private fun wheelOutComeText(outCome: String){
-        when (outCome){
-            "100" -> gameData.wheelText = "Hjulet landte på 100"
-            "300" -> gameData.wheelText = "Hjulet landte på 300"
-            "500" -> gameData.wheelText = "Hjulet landte på 500"
-            "600" -> gameData.wheelText = "Hjulet landte på 600"
-            "800" -> gameData.wheelText = "Hjulet landte på 800"
-            "1000" -> gameData.wheelText = "Hjulet landte på 1000"
-            "1500" -> gameData.wheelText = "Hjulet landte på 1500"
-            "Fallit" -> gameData.wheelText = "Du er gået falit. Dine point er blevet sat til 0"
-        }
-    }
+
     fun spineWheel() {
         val pointList = listOf("100", "100", "300", "500", "500", "500", "500", "500", "600", "600", "800", "800", "800", "800", "800", "1000", "1000", "1500", "Fallit")
         val randomIndex = Random.nextInt(pointList.size)
         gameData.wheelPlacement = pointList[randomIndex]
         wheelOutCome(gameData.wheelPlacement)
-        wheelOutComeText(gameData.wheelPlacement)
     }
 
     fun changeKeyboard(keyboard: String){
@@ -73,12 +48,12 @@ class LykkehjuletViewModel: ViewModel() {
             if (!getIsClicked(letter) && gameData.pointTotal >= 500) {
                 buyVowel(letter)
                 setIsClicked(letter)
-                gameData.alert = ""
+                gameData.alert = 0
             } else {
-                gameData.alert = "Du har ikke nok point til at købe en Vokal"
+                gameData.alert = 3
             }
         }else {
-            gameData.alert = "Voklar skal købes før hjulet er blevet drejet"
+            gameData.alert = 4
         }
     }
 
@@ -122,9 +97,22 @@ class LykkehjuletViewModel: ViewModel() {
             guessConsunant(letter)
             setIsClicked(letter)
             gameData.hasWheelBeenSpined = false
-            gameData.alert = ""
+            gameData.alert = 0
         }else{
-            gameData.alert = "Du skal dreje hjulet før du kan vælge et bogstav"
+            gameData.alert = 2
+        }
+    }
+
+    private fun wheelOutCome(outCome: String){
+        when (outCome){
+            "100" -> gameData.currentPoint = 100
+            "300" -> gameData.currentPoint = 300
+            "500" -> gameData.currentPoint = 500
+            "600" -> gameData.currentPoint = 600
+            "800" -> gameData.currentPoint = 800
+            "1000" -> gameData.currentPoint = 1000
+            "1500" -> gameData.currentPoint = 1500
+            "Fallit" -> {gameData.pointTotal = 0; gameData.currentPoint = 0; gameData.hasWheelBeenSpined = false}
         }
     }
 
@@ -199,11 +187,11 @@ class LykkehjuletViewModel: ViewModel() {
 
     fun spinWheelLogic() {
         if (!gameData.hasWheelBeenSpined) {
-            spineWheel()
             gameData.hasWheelBeenSpined = true
-            gameData.alert = ""
+            spineWheel()
+            gameData.alert = 0
         }else{
-            gameData.alert = "Du skal vælge en konsunant"
+            gameData.alert = 5
         }
     }
 }
